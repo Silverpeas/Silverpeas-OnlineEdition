@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Silverpeas WebDAV
+Comment=Silverpeas Document Online Edition
+Exec=/usr/bin/onlineEditing %u
+Icon=skype.png
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Network;Application;Office
+MimeType=x-scheme-handler/spwebdav;
+NoDisplay=true
+X-KDE-Protocols=spwebdav
