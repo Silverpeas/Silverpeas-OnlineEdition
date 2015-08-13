@@ -7,6 +7,6 @@ Terminal=false
 Type=Application
 Encoding=UTF-8
 Categories=Network;Application;Office
-MimeType=x-scheme-handler/spwebdav;
+MimeType=x-scheme-handler/spwebdav;x-scheme-handler/spwebdavs;
 NoDisplay=true
 X-KDE-Protocols=spwebdav
