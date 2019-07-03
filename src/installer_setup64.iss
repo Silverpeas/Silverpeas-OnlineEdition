@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Silverpeas WebDAV Handler"
-#define MyAppVersion "0.1"
+#define MyAppVersion "0.2"
 #define MyAppPublisher "Silverpeas"
 #define MyAppURL "http://www.silverpeas.com"
 #define MyAppExeName "onlineEditing.exe"
@@ -19,12 +19,13 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={commonpf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
+OutputDir=g:\
+OutputBaseFilename=setup64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -32,7 +33,7 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "D:\Silverpeas\OnlineEditing\OnlineEditingWithGo\bin\onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "h:\sources\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition\onlineEditing64.exe";DestName: "onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -42,3 +43,6 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Root: HKCR; Subkey: "spwebdav"; ValueType: "string"; ValueData: "URL:Custom Protocol"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "spwebdav"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
 Root: HKCR; Subkey: "spwebdav\shell\open\command"; ValueType: "string"; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKCR; Subkey: "spwebdavs"; ValueType: "string"; ValueData: "URL:Custom Protocol"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "spwebdavs"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "spwebdavs\shell\open\command"; ValueType: "string"; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
