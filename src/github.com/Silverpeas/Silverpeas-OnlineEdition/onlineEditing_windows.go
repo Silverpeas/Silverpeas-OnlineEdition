@@ -1,136 +1,149 @@
 package main
 
-import "fmt"
-import "log"
+import (
+	"golang.org/x/sys/windows/registry"
+	"regexp"
+	"strings"
+)
 import "os"
-import "strings"
-import "github.com/skratchdot/open-golang/open"
-import "golang.org/x/sys/windows/registry"
 
 func main() {
-	fmt.Println("Edition en ligne Silverpeas.\n")
-	
+	info("Silverpeas Online Edition")
 	customURL := os.Args[1]
-	
-	log.Println(customURL)
-	
-	customURL2 := strings.Replace(customURL, "spwebdav://", "http://", 1)
-	webDavURL := strings.Replace(customURL2, "spwebdavs://", "https://", 1)
-	
+	webDavURL := customToWebdavURL(customURL)
 	openWithWindows(webDavURL)
-//  var input string
-//  fmt.Scanln(&input)
-
 }
 
-func openWithWindows(url string) {
-	log.Printf("Windows...")
+func openWithWindows(webDavURL string) {
+	extension := getFileExtension(webDavURL)
+	runnable := getApplicationRunnable(extension)
+	runDesktopApplicationWith(webDavURL, runnable)
+}
 
-	parts := strings.Split(url, "/")
-	fileName := parts[len(parts)-1]
-	extension := substr(fileName,strings.LastIndex(fileName, "."),len(fileName)-strings.LastIndex(fileName, "."))
+func getApplicationRunnable(extension string) string {
+	runnable := getApplicationRunnableFromRegistry(extension)
+	if strings.EqualFold(runnable, "") {
+		runnable = getMSOpenApplication(extension)
+	}
+	if strings.EqualFold(runnable, "") {
+		runnable = getMSApplication(extension)
+	}
+	if strings.EqualFold(runnable, "") {
+		runnable = getOOApplication(extension)
+	}
+	return runnable
+}
 
+func getMSOpenApplication(extension string) string {
+	var runnable string = ""
+	contentType := getContentTypeFromRegistry(extension)
+	if isMSOfficeInstalled() && strings.Contains(contentType, "vnd.openxmlformats-officedocument") {
+		if strings.Contains(contentType, ".word") {
+			runnable = "winword.exe"
+		} else if strings.Contains(contentType, ".spread") {
+			runnable = "excel.exe"
+		} else if strings.Contains(contentType, ".presentation") {
+			runnable = "powerpnt.exe"
+		}
+	}
+	if !strings.EqualFold(runnable, "") {
+		info("Detecting MSOffice and guessing " + runnable + " runnable from '" + contentType + "' content type")
+	}
+	return runnable
+}
+
+func getMSApplication(extension string) string {
+	var runnable string = ""
 	if isMSProject(extension) {
-		if isMSProjectInstalled() {
-			log.Printf("Ouvre avec MSProject...")
-			openWithMSSoftware(url)
+		runnable = "winproj.exe"
+		info("Guessing " + runnable + " runnable from '" + extension + "' extension")
+	} else if isMSOfficeInstalled() {
+		if isPowerPoint(extension) {
+			runnable = "powerpnt.exe"
+		} else if isExcel(extension) {
+			runnable = "excel.exe"
+		} else if isWord(extension) {
+			runnable = "winword.exe"
 		}
-	}	else { 
-		if isMSOfficeInstalled() {
-			log.Printf("Ouvre avec MSOffice...")
-			openWithMSSoftware(url)
-		}	else { 
-			log.Printf("Ouvre avec soffice...")
-			openWithOpenOffice(url)
+		if !strings.EqualFold(runnable, "") {
+			info("Detecting MSOffice and guessing " + runnable + " runnable from '" + extension + "' extension")
 		}
 	}
+	return runnable
 }
 
-func isMSProjectInstalled() bool {
-	k, err := registry.OpenKey(registry.CLASSES_ROOT, "MSProject.Application", registry.QUERY_VALUE)
-	if err == registry.ErrNotExist {
-		fmt.Print(err)	
-		return false
-	} else {
-		return true
-	}
-	defer k.Close()
-	return false
+func getOOApplication(extension string) string {
+	runnable := "soffice.exe"
+	defer info("Guessing " + runnable + " runnable from '" + extension + "' extension")
+	return runnable
 }
 
-func isMSOfficeInstalled() bool {
-	k, err := registry.OpenKey(registry.CLASSES_ROOT, "Word.Application", registry.QUERY_VALUE)
-	if err == registry.ErrNotExist {
-		log.Print(err)	
-		return false
-	} else {
-		return true
-	}
-	defer k.Close()
-	return false
-}
-
-func openWithOpenOffice(url string) {
-	err2 := open.RunWith(url, "soffice.exe")
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-}
-
-func openWithMSSoftware(url string) {
-	err2 := open.RunWith(url, getMSApplication(url))
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-}
-
-func getMSApplication(url string) string {
-	parts := strings.Split(url, "/")
-	fileName := parts[len(parts)-1]
-	extension := substr(fileName,strings.LastIndex(fileName, "."),len(fileName)-strings.LastIndex(fileName, "."))
-	
-	if isPowerPoint(extension) {
-		log.Printf("Extension = "+extension+" -> powerpnt.exe")
-		return "powerpnt.exe"
-	} else if isExcel(extension) {
-		log.Printf("Extension = "+extension+" -> excel.exe")
-		return "excel.exe"
-	} else if isMSProject(extension) {
-		log.Printf("Extension = "+extension+" -> winproj.exe")
-		return "winproj.exe"
-	} else {
-		log.Printf("Extension = "+extension+" -> winword.exe")
-		return "winword.exe"
-	}
-}
-func substr(input string, start int, length int) string {
-    asRunes := []rune(input)
-    if start >= len(asRunes) {
-        return ""
-    }
-    if start+length > len(asRunes) {
-        length = len(asRunes) - start
-    }
-    return string(asRunes[start : start+length])
+func isWord(extension string) bool {
+	return strings.HasPrefix(extension, "doc") || strings.HasPrefix(extension, "dot")
 }
 
 func isPowerPoint(extension string) bool {
-	if strings.HasSuffix(extension, "ppt") || strings.HasSuffix(extension, "pot") || strings.HasSuffix(extension, "pptx") || strings.HasSuffix(extension, "pptm") || strings.HasSuffix(extension, "potx") || strings.HasSuffix(extension, "potm")	{
-		return true
-		}
-		return false
-}	
+	return strings.HasPrefix(extension, "ppt") || strings.HasPrefix(extension, "pot")
+}
 
 func isExcel(extension string) bool {
-	if strings.HasSuffix(extension, "xls") || strings.HasSuffix(extension, "xlsx") || strings.HasSuffix(extension, "xlt") || strings.HasSuffix(extension, "xlsm") || strings.HasSuffix(extension, "xltx") || strings.HasSuffix(extension, "xltm")	 || strings.HasSuffix(extension, "xlsb")  || strings.HasSuffix(extension, "xlam") {
-			return true
-			}
-		return false
-}	
+	return strings.HasPrefix(extension, "xls") || strings.HasPrefix(extension, "xlt") || strings.HasPrefix(extension, "xlam")
+}
 
 func isMSProject(extension string) bool {
-	if strings.HasSuffix(extension, "mpp") || strings.HasSuffix(extension, "mpt") {
-			return true
+	return strings.HasPrefix(extension, "mpp") || strings.HasPrefix(extension, "mpt")
+}
+
+func isMSProjectInstalled() bool {
+	return isRegistryPathExisting("MSProject.Application")
+}
+
+func isMSOfficeInstalled() bool {
+	return isRegistryPathExisting("Word.Application")
+}
+
+func isRegistryPathExisting(path string) bool {
+	k, err := registry.OpenKey(registry.CLASSES_ROOT, path, registry.QUERY_VALUE)
+	defer k.Close()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func getApplicationRunnableFromRegistry(extension string) string {
+	var runnable string = ""
+	fileClass := getValueSafelyFromRegistry("."+extension, "")
+	if !strings.EqualFold(fileClass, "") {
+		fullRunnable := getValueSafelyFromRegistry(fileClass+"\\Shell\\Open\\Command", "")
+		if !strings.EqualFold(fullRunnable, "") {
+			runnable = string(regexp.MustCompile("(?i).*[\\\\/]([^\\\\/]+[.]exe).*").ReplaceAll([]byte(fullRunnable), []byte("$1")))
+			if strings.EqualFold(runnable, fullRunnable) {
+				runnable = ""
 			}
-	return false
-}	
+		}
+	}
+	runnable = strings.ToLower(runnable)
+	if !strings.EqualFold(runnable, "") {
+		info("Finding " + runnable + " runnable from registry base")
+	}
+	return runnable
+}
+
+func getContentTypeFromRegistry(extension string) string {
+	contentType := getValueSafelyFromRegistry("."+extension, "Content Type")
+	return strings.ToLower(contentType)
+}
+
+func getValueSafelyFromRegistry(path string, key string) string {
+	k, err := registry.OpenKey(registry.CLASSES_ROOT, path, registry.QUERY_VALUE)
+	defer k.Close()
+	if err != nil {
+		return ""
+	}
+	value, _, err := k.GetStringValue(key)
+	if err != nil {
+		return ""
+	}
+	return value
+}

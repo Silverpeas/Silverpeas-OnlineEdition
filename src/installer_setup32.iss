@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Silverpeas WebDAV Handler"
-#define MyAppVersion "0.2"
+#define MyAppVersion "0.3"
 #define MyAppPublisher "Silverpeas"
 #define MyAppURL "http://www.silverpeas.com"
 #define MyAppExeName "onlineEditing.exe"
@@ -24,7 +24,7 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 Compression=lzma
 SolidCompression=yes
-OutputDir=g:\
+OutputDir=D:\DEVT\SilverpeasV6\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition
 OutputBaseFilename=setup32
 
 
@@ -34,7 +34,7 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "h:\sources\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition\onlineEditing32.exe";DestName: "onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\DEVT\SilverpeasV6\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition\onlineEditing32.exe";DestName: "onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
