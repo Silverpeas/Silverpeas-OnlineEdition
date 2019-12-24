@@ -1,10 +1,8 @@
 1. Compilation du source GO en .exe :
 
-Pour compiler la version Windows 64 bits :
->GOOS=windows GOARCH=amd64 go build -i -o onlineEditing64.exe onlineEditing_windows.go 
-
-Pour compiler la version Windows 32 bits :
->GOOS=windows GOARCH=386 go build -i -o onlineEditing32.exe onlineEditing_windows.go 
+Pour compiler la version Windows 64 bits, exécuter le script '_buildW64'
+Pour compiler la version Windows 32 bits, exécuter le script '_buildW32'
+(depuis le répertoire /src/github.com/Silverpeas/Silverpeas-OnlineEdition)
 
 
 2.Génération du programme d'installation windows
