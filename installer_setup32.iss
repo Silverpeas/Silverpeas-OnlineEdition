@@ -24,8 +24,9 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 Compression=lzma
 SolidCompression=yes
-OutputDir=D:\DEVT\SilverpeasV6\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition
-OutputBaseFilename=setup64
+OutputDir=out
+OutputBaseFilename=setup32
+
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -33,8 +34,9 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "D:\DEVT\SilverpeasV6\Silverpeas-OnlineEdition\src\github.com\Silverpeas\Silverpeas-OnlineEdition\onlineEditing64.exe";DestName: "onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "out\onlineEditing32.exe";DestName: "onlineEditing.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
