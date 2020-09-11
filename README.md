@@ -11,5 +11,5 @@ To build the handler, just use one of the following script:
 For Windows, Inno Setup tool is used to generate Setup program from installer_setup32.iss and installer_setup64.iss script files (for respectively Windows 32bits and Windows 64bits).
 The setup generation is performed directly by `_buildW32.bat` or `_buildW64.bat` script file (Inno Setup install path **MUST** be referenced by **%INNO_SETUP_HOME%** or **%PATH%** environment variable).
 
-For Linux, the `_buildL64.sh` compile the Linux version of the handler and then build a distribution archive of the handler with the `spwebdav.desktop` desktop application descriptor.  
+For Linux, the `_buildL64.sh` compile the Linux version of the handler and then build a distribution archive of the handler with the `spwebdav.desktop` desktop application descriptor by using the **7-Zip** tool.  
 For Windows, the `_buildL64.bat` does the same as the Linux one by using **7-Zip** about the archive operation (7-Zip install path **MUST** be referenced by **%ZIP_HOME%** or **%PATH%** environment variable).
